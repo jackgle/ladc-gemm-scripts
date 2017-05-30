@@ -1,4 +1,4 @@
-function [cs] = click_extract(signal, method, dB_cutoff, frame_size, shorttime, filename)
+function [cs] = click_extract(signal, method, dB_cutoff, frame_size, time, filename)
 
 % NAME: click_extract (v2.2)
 % 
@@ -20,6 +20,8 @@ function [cs] = click_extract(signal, method, dB_cutoff, frame_size, shorttime, 
 %                           number of samples to the left and right of the peak.
 %
 %         (5) time : Time array of signal
+%
+%         (6) filename : String containing source file name
 %
 % OUTPUT: The function outputs a structure with each field containing
 %         information about a detected click. Currently the subfields for
@@ -43,7 +45,7 @@ function [cs] = click_extract(signal, method, dB_cutoff, frame_size, shorttime, 
 % NOTES: 
 %       
 %       If a signal for matched filtering is provided, this program takes 
-%       the cross correlation of the given frameed
+%       the cross correlation of the given framed
 %       signal and the given long signal, keeping the long signal stationary.
 %       Segments of the long signal are extracted in frames where there
 %       are local maxima in the cross-correlation. The cross-correlation
@@ -77,8 +79,8 @@ if iscolumn(signal)
     signal=signal';
 end
 
-if nargin==4 || isempty(shorttime)
-    shorttime = 1:size(signal,2);
+if nargin==4 || isempty(time)
+    time = 1:size(signal,2);
 end
 
 version = 'v2.2';
@@ -198,20 +200,20 @@ for i = 1:size(slocs_out,2)
     if slocs_out(i)+((frame_size/2)-0.5) > size(signal,2)
         cs(i).sig = signal(slocs_out(i)-((frame_size/2)-0.5):end);
         cs(i).sample_pk = slocs_out(i);
-        cs(i).time_pk = shorttime(slocs_out(i));
-        cs(i).time_win = shorttime(slocs_out(i)-((frame_size/2)-0.5):end);
+        cs(i).time_pk = time(slocs_out(i));
+        cs(i).time_win = time(slocs_out(i)-((frame_size/2)-0.5):end);
         cs(i).sample_win = slocs_out(i)-((frame_size/2)-0.5):size(signal,2);
     elseif slocs_out(i)-((frame_size/2)-0.5) < 1
         cs(i).sig = signal(1:slocs_out(i)+((frame_size/2)-0.5));
         cs(i).sample_pk = slocs_out(i);
-        cs(i).time_pk = shorttime(slocs_out(i));
-        cs(i).time_win = shorttime(1:slocs_out(i)+((frame_size/2)-0.5));
+        cs(i).time_pk = time(slocs_out(i));
+        cs(i).time_win = time(1:slocs_out(i)+((frame_size/2)-0.5));
         cs(i).sample_win = 1:slocs_out(i)+((frame_size/2)-0.5);
     else
         cs(i).sig = signal(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5));
         cs(i).sample_pk = slocs_out(i);
-        cs(i).time_pk = shorttime(slocs_out(i));
-        cs(i).time_win = shorttime(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5))';
+        cs(i).time_pk = time(slocs_out(i));
+        cs(i).time_win = time(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5))';
         cs(i).sample_win = slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5);
     end
     cs(i).specfilename = filename;
