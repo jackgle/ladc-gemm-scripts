@@ -1,5 +1,9 @@
 function [ hfdx ] = hfd( X, kvect, graph )
 
+% This function computes the fractal dimension of a waveform as proposed by
+% Higuchi in "Approach to an Irregular Time Series on the Basis of Fractal
+% Theory" (1988)
+
 N = length(X);
 j=1;
 L_k = zeros(1,length(kvect));

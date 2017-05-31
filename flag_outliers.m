@@ -1,14 +1,15 @@
 function [struct,d] = flag_outliers(struct,fmat,plt)
 
-% This program creates a field 
+% This program adds a field to a click structure with a binary value that either flags an
+% observation as an outlier (1) or not (0)
 
 fmat_norm = normalizeData(fmat');
 fmat = fmat_norm';
 
-% eva = evalclusters(fmat,'kmeans','DaviesBouldin','KList',1:10);
-% k=eva.OptimalK;
+eva = evalclusters(fmat,'kmeans','DaviesBouldin','KList',1:10);
+k=eva.OptimalK;
 
-[~,~,~,d]=kmedoids(fmat,1);
+[~,~,~,d]=kmedoids(fmat,k);
 
 mind=zeros(length(d),1);
 for i=1:length(d)

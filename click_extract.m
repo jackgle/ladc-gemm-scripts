@@ -42,6 +42,10 @@ function [cs] = click_extract(signal, method, dB_cutoff, frame_size, time, filen
 %                                           frame
 %                       (6) .filename :     EARS file name
 %
+%                       (7) .noise :        An estimate of the signal noise
+%                                           taken as the first 3-13 ms of 
+%                                           the source file
+%
 % NOTES: 
 %       
 %       If a signal for matched filtering is provided, this program takes 
@@ -56,8 +60,8 @@ function [cs] = click_extract(signal, method, dB_cutoff, frame_size, time, filen
 %       Here is an example of iterating through the structure fields created
 %       by this program:
 %
-%           for i = 1:len(cstruct)
-%               soundsc(cstruct(i).sig, Fs*0.01);
+%           for i = 1:len(cs)
+%               soundsc(cs(i).sig, Fs*0.01);
 %               pause(1);
 %           end
 %
@@ -217,7 +221,7 @@ for i = 1:size(slocs_out,2)
         cs(i).sample_win = slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5);
     end
     cs(i).specfilename = filename;
-    cs(i).noise = signal(.003*192000:round(.013*192000)); % First 10 ms of file collected as noise estimate
+    cs(i).noise = signal(.003*192000:round(.013*192000)); % First 3-13 ms of file collected as noise estimate
 end
 
 len = length(cs);

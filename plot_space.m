@@ -20,7 +20,7 @@ if ~exist('idx','var')
 end
 
 k=length(unique(idx));
-c = cool(k);
+c = cool(k+1);
 
 shg
 

@@ -11,6 +11,7 @@ end
 
 L = D - W;
 
+% Alternative normalization
 % D = sqrtm(D);
 % L = D\A/D;
 

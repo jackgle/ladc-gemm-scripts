@@ -2,9 +2,9 @@ function plot_extracts(cstruct,signal,shorttime,idx)
 
 % This function plots the results of click_extract. The original signal is
 % plotted, with extracted segments highlighted in orange.
-%
 
-% fields = fieldnames(cstruct);
+[B,A] = butter(5, [(15000*2)/192000 (95000*2)/192000]);
+signal = filtfilt(B,A,signal);
 
 len =length(cstruct);
 

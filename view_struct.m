@@ -1,6 +1,7 @@
 function view_struct( cstruct )
 
-% fields = fieldnames(click_struct);
+% This function plots extracts in a 4x4 grid with the ability to advance
+% the plotted frames using the left and right arrow keys.
 
 len = length(cstruct);
 
