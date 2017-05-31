@@ -1,5 +1,5 @@
 
-Matlab scripts for processing and analysis of acoustic data. Tools for pattern recognition and waveform classification are included. These were written for Environmental Acoustic Recording System (EARS) data.
+MATLAB scripts for processing and analysis of acoustic data. Pattern recognition and classification tools are the focus. These were written for Environmental Acoustic Recording System (EARS) data.
 
 Long-term passive acoustic monitoring has been implemented to support population models of marine mammals in the Gulf of Mexico. Techniques for mining large volumes of acoustic data are in development. 
 
