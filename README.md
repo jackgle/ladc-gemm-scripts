@@ -5,7 +5,7 @@ Long-term passive acoustic monitoring has been implemented to support population
 
 ## Examples
 
-(1) Detect target patterns in a signal by matched filtering
+(1) Detect target patterns in a signal by matched filtering:
 
 Load detect_test.mat from the 'test' directory into MATLAB. Run the 'run_patterndetect.m' script. Follow instructions from the command line. The extracted frames now held in the structure array can be viewed with view_struct.m 
 
