@@ -13,7 +13,7 @@ Load detect_test.mat from the 'test' directory into MATLAB. Run the 'run_pattern
 
 Load class_test.mat from the 'test' directory. Run 'run_clustering.m'.
 
-![Screenshot](/test/testresults.tif)
+![Screenshot](/test/testresults.png)
 
 ## Dependencies
 
