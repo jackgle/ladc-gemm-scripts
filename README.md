@@ -15,4 +15,4 @@ Load class_test.mat from the 'test' directory. Run 'run_clustering.m'.
 
 MATLAB (Toolboxes: Neural Network, Signal Processing, Statistics and Machine Learning, Wavelet)
 
-Note: Only few specific functions require the neural network, and wavelet toolboxes.
+Note: Only a few specific functions require the neural network, and wavelet toolboxes.
