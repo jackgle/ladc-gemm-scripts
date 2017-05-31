@@ -14,5 +14,5 @@ xlabel('Pattern Duration (ms)');
 ylabel('Higuchi FD')
 zlabel('-20 dB Center Frequency (Hz)');
 xlim([0 800]);
-hold on; scatter(feature_mat(:,1),feature_mat(:,2),'o','MarkerEdgeColor',[.7 .7 .7]);
+hold on; scatter(feature_mat(:,1),feature_mat(:,2),'o','MarkerEdgeColor',[.7 .7 .7],'LineWidth',.8);
 accuracy = class_accuracy(idx,idx_true,num_clusters);

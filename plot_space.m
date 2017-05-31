@@ -27,11 +27,11 @@ shg
 if size(mat_C,2)>2
     if isempty(od)
         for i = 1:k
-            scatter3(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2), mat_c_norm(idx==i,3),'MarkerEdgeColor',c(i,:));
+            scatter3(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2), mat_c_norm(idx==i,3),'MarkerEdgeColor',c(i,:),'LineWidth',.8);
         end
     else
         for i = 1:k-1
-            scatter3(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2), mat_c_norm(idx==i,3),'MarkerEdgeColor',c(i,:));
+            scatter3(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2), mat_c_norm(idx==i,3),'MarkerEdgeColor',c(i,:),'LineWidth',.8);
         end
         for i = k
             scatter3(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2), mat_c_norm(idx==i,3),'kx');
@@ -40,11 +40,11 @@ if size(mat_C,2)>2
 else
     if isempty(od)
         for i = 1:k
-            scatter(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2),'MarkerEdgeColor',c(i,:));
+            scatter(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2),'MarkerEdgeColor',c(i,:),'LineWidth',.8);
         end
     else
         for i = 1:k-1
-            scatter(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2),'MarkerEdgeColor',c(i,:));
+            scatter(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2),'MarkerEdgeColor',c(i,:),'LineWidth',.8);
         end
         for i = k
             scatter(mat_c_norm(idx==i,1), mat_c_norm(idx==i,2),20,'kx');
