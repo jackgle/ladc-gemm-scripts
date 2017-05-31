@@ -11,6 +11,8 @@ Load detect_test.mat from the 'test' directory into MATLAB. Run the 'run_pattern
 (2)
 Load class_test.mat from the 'test' directory. Run 'run_clustering.m'.
 
+![Screenshot](clusteringresults.tif)
+
 ## Dependencies
 
 MATLAB (Toolboxes: Neural Network, Signal Processing, Statistics and Machine Learning, Wavelet)
