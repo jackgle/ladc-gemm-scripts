@@ -1,7 +1,10 @@
 function plot_extracts(cstruct,signal,shorttime,idx)
 
 % This function plots the results of click_extract. The original signal is
-% plotted, with extracted segments highlighted in orange.
+% plotted, with extracted segments highlighted.
+
+% Filter signal as in click_extract, so that highlighted extracts align
+% with the signal they are overlayed upon
 
 [B,A] = butter(5, [(15000*2)/192000 (95000*2)/192000]);
 signal = filtfilt(B,A,signal);
@@ -14,10 +17,6 @@ if nargin==4
     
     k=max(idx);
     colors = parula(k);
-    
-%     for i = 1:k
-%         colors{i} = [rand() rand() rand()];
-%     end
     
     if isempty(shorttime)
         if ~isempty(signal)
@@ -67,7 +66,7 @@ end
     
 %grid on
 hold off
-h = zoom;
+% h = zoom;
 % h.Motion = 'horizontal';
 %h.Enable = 'on';
 

@@ -1,40 +1,37 @@
-function [cs] = click_extract(signal, method, dB_cutoff, frame_size, time, filename)
+function [cs, noise] = click_extract(signal, time, method, dB_thresh, frame_size, filename)
 
-% NAME: click_extract (v2.2)
+% NAME: click_extract (v2.3)
 % 
 % INPUTS: (1) signal : 1xn Input signal
 %
-%         (2) method : If == 'Amp', amplitude threshold will be used, if == 'TK',
-%                      Teager-Kaiser threshold will be used, if an array is input,
+%         (2) time : Time array of signal
+%
+%         (3) method : If == 'Amp', voltage amplitude threshold will be used, if == 'TK',
+%                      Teager-Kaiser amplitude threshold will be used, if an array is input,
 %                      matched filtering will be used
 %
-%         (3) dB_cutoff : The number of standard deviations from the mean
-%                         of the cross correlation to set the peak finding 
-%                         threshold.
+%         (4) dB_thresh : Decibel level of the detection threshold
 %
-%         (4) frame_size : The frame size in number of samples to extract
+%         (5) frame_size : The frame size in number of samples to extract
 %                           for each click. If an even number is input, it
 %                           will automatically be incremented by one. The
-%                           detected cross-corr peak will fall on the center 
-%                           sample of the frame, and there will be an equal 
-%                           number of samples to the left and right of the peak.
-%
-%         (5) time : Time array of signal
+%                           detected peak will correspond to the center 
+%                           sample of the frame
 %
 %         (6) filename : String containing source file name
 %
-% OUTPUT: The function outputs a structure with each field containing
+% OUTPUT: The function outputs a structure array with each struct containing
 %         information about a detected click. Currently the subfields for
 %         each click contain:
 %
-%                       (1) .sig :          The frameed signal containing
+%                       (1) .sig :          The framed signal containing
 %                                           the click.
 %
 %                       (2) .sample_pk :    The sample number of the
-%                                           frame's xcorr peak.
+%                                           frame's detected peak.
 %
 %                       (3) .time_pk :      The time array value of the 
-%                                           frame's xcorr peak.
+%                                           frame's detected peak.
 %
 %                       (4) .time_win :     The time array of the frame.
 %
@@ -42,19 +39,16 @@ function [cs] = click_extract(signal, method, dB_cutoff, frame_size, time, filen
 %                                           frame
 %                       (6) .filename :     EARS file name
 %
-%                       (7) .noise :        An estimate of the signal noise
-%                                           taken as the first 3-13 ms of 
-%                                           the source file
 %
 % NOTES: 
 %       
-%       If a signal for matched filtering is provided, this program takes 
-%       the cross correlation of the given framed
+%       If a short signal for matched filtering is provided, this program takes 
+%       the cross correlation of the given short
 %       signal and the given long signal, keeping the long signal stationary.
 %       Segments of the long signal are extracted in frames where there
 %       are local maxima in the cross-correlation. The cross-correlation
 %       oscillates as the given click passes in and out of phase with
-%       clicks in the signal. The algorithm extracts at the maximum of each
+%       clicks in the signal. The algorithm extracts centered on the maximum of each
 %       of these peak clusters.
 %
 %       Here is an example of iterating through the structure fields created
@@ -78,6 +72,9 @@ function [cs] = click_extract(signal, method, dB_cutoff, frame_size, time, filen
 %
 %       v2.2, 03/26/17, Jack LeBien - Now has option to detect by
 %       Teager-Kaiser energy
+%
+%       v2.3, 05/12/17, Jack LeBien - Updated notes, added noise estimate
+%       output
 
 if iscolumn(signal)
     signal=signal';
@@ -87,7 +84,7 @@ if nargin==4 || isempty(time)
     time = 1:size(signal,2);
 end
 
-version = 'v2.2';
+version = 'v2.3';
 fprintf('\n\n\t\tclick_extract %s', version);
 fprintf('\n\nWorking...');
 
@@ -124,7 +121,7 @@ else
     error('Empty methods input');
 end
 %% Get the locations of maxima with amplitudes above the given threshold
-slocs = locs(pks>dB_cutoff);
+slocs = locs(pks>dB_thresh);
 fprintf('\n\nNumber of significant peaks detected: %i\n',size(slocs,2));
 
 %% Interface for checking click detection threshold
@@ -144,15 +141,14 @@ if ~isempty(i)
     ylabel(ystring);
     fig = gcf;
     figure(fig);
-    %pkCIHi(1:size(cross_corr,2)) = mean(cross_corr)+dB_cutoff*std(cross_corr);
-    pkCIHi(1:size(sig_T,2)) = dB_cutoff;
+    pkCIHi(1:size(sig_T,2)) = dB_thresh;
     plot(pkCIHi,'--m');
     hold off
     fprintf('\n------------------------------------------------------------\nIf you wish to change the threshold, type a new value and press RETURN.\nOtherwise, press RETURN.\n\n');
     fprintf('\t');
-    dB_cutoff = input('');
-    while(~isempty(dB_cutoff))
-        slocs = locs(pks>dB_cutoff);
+    dB_thresh = input('');
+    while(~isempty(dB_thresh))
+        slocs = locs(pks>dB_thresh);
         fprintf('\nNumber of peaks detected: %i\n\n',size(slocs,2));
         clf;
         plot(sig_T,'Color',[0 0.4470 0.7410]);
@@ -163,12 +159,11 @@ if ~isempty(i)
         fig = gcf;
         figure(fig);
         hold on
-        %pkCIHi(1:size(cross_corr,2)) = mean(cross_corr)+dB_cutoff*std(cross_corr);
-        pkCIHi(1:size(sig_T,2)) = dB_cutoff;
+        pkCIHi(1:size(sig_T,2)) = dB_thresh;
         plot(pkCIHi,'--m');
         hold off
         fprintf('\t');
-        dB_cutoff = input('');
+        dB_thresh = input('');
     end
     close(fig);
 end
@@ -198,7 +193,7 @@ end
 % s_len = size(slocs_out,2); % length of unfiltered structure
 % cstruct = zeros(s_len);
 cs = struct();
-%% Create the new data structure
+%% Create the new data structure, and noise estimate
 for i = 1:size(slocs_out,2)
     
     if slocs_out(i)+((frame_size/2)-0.5) > size(signal,2)
@@ -221,14 +216,14 @@ for i = 1:size(slocs_out,2)
         cs(i).sample_win = slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5);
     end
     cs(i).specfilename = filename;
-    cs(i).noise = signal(.003*192000:round(.013*192000)); % First 3-13 ms of file collected as noise estimate
+    noise = signal(.003*192000:round(.013*192000)); % First 3-13 ms of file collected as noise estimate
 end
 
 len = length(cs);
 
 fprintf('Number of frames extracted: %i\n\n',len);
 
-fprintf('------------------------------------------------\nPress the left and right arrow keys to navigate through\nplotted frames.\n\nTo discard signals, enter the fieldnames (subplot titles) of\nthe undesired signals in the terminal, each followed by\nRETURN. Single quotes are not needed.\n\nPress ESC in the figure when finished.\n\n');
+fprintf('------------------------------------------------\nPress the left and right arrow keys to navigate through\nplotted frames.\n\nTo discard signals, enter the plot numbers of\nthe undesired signals in the terminal, each followed by\nRETURN. Single quotes are not needed.\n\nPress ESC in the figure when finished.\n\n');
 
 %% Interface for filtering unwanted signals from the structure
 i=1;
