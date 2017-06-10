@@ -3,9 +3,7 @@ function [struct_out] = process_cstruct( struct_in, plot_prcs )
 % This function performs Hann windowing on the signals of the extracted
 % structure array
 
-% fields = fieldnames(struct_in); % List of fieldnames of the input structure
-
-% [B,A] = butter(5, [10000 90000]/96000);
+[B,A] = butter(5, [10000 95000]/96000);
 
 % if nargin == 1 || isempty(win)
     win = hann(length(struct_in(1).sig))';
@@ -26,22 +24,22 @@ for i = 1:length(struct_in)
         axis tight
         pause(2);
     end
-%     struct_out(i).sig = filtfilt(B,A,struct_out(i).sig);
-%     if strcmp(plot_prcs,'plot')
-%         plot(struct_out(i).sig);
-%         axis tight
-%         pause(2);
-%     end
-%     struct_out(i).sig = wden(struct_out(i).sig,'modwtsqtwolog','s','mln',6,'fk8');
-%     if strcmp(plot_prcs,'plot')
-%         plot(struct_out(i).sig);
-%         pause(2);
-%     end
     struct_out(i).sig = struct_out(i).sig.*win;
     if strcmp(plot_prcs,'plot')
         plot(struct_out(i).sig);
         pause(2);
     end
+    struct_out(i).sig = filtfilt(B,A,struct_out(i).sig);
+    if strcmp(plot_prcs,'plot')
+        plot(struct_out(i).sig);
+        axis tight
+        pause(2);
+    end
+%     struct_out(i).sig = wden(struct_out(i).sig,'modwtsqtwolog','s','mln',6,'fk8');
+%     if strcmp(plot_prcs,'plot')
+%         plot(struct_out(i).sig);
+%         pause(2);
+%     end
 end
 
 end

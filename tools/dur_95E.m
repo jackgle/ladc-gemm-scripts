@@ -1,16 +1,18 @@
-function [ dur ] = dur_95E( sig, noise )
+function [dur] = dur_95e(sig,Fs)
 
-Fs=192000;
+% Computes the 95% energy duration measure by Madsen & Wahlberg 2007
 
-thresh = mean(noise.^2) + 2*std(noise.^2);
+sig_c = cumsum(sig.^2);
+mx=max(sig_c);
+strtpt=mx*2.5/100;
+ndpt=mx*97.5/100;
 
-dur = range(find(sig.^2>thresh));
+tmp_strt=abs(sig_c-strtpt);
+tmp_nd=abs(sig_c-ndpt);
 
-dur = (dur/Fs)*10^6; % give answer in microseconds
+[~, idxstrt] = min(tmp_strt);
+[~, idxnd] =min(tmp_nd);
 
-if isempty(dur)
-    dur = 0;
-end
+dur=idxnd-idxstrt;
 
-end
-
+dur =dur/Fs*10^6;

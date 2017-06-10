@@ -1,4 +1,4 @@
-function [cs, noise] = click_extract(signal, time, method, dB_thresh, frame_size, filename)
+function [cs] = click_extract(signal, time, method, dB_thresh, frame_size, filename)
 
 % NAME: click_extract (v2.3)
 % 
@@ -38,6 +38,9 @@ function [cs, noise] = click_extract(signal, time, method, dB_thresh, frame_size
 %                       (5) .sample_win :   The sample number array of the
 %                                           frame
 %                       (6) .filename :     EARS file name
+%
+%                       (7) .noise :        noise estimate collected as
+%                                           first 3-13 ms of signal
 %
 %
 % NOTES: 
@@ -216,7 +219,7 @@ for i = 1:size(slocs_out,2)
         cs(i).sample_win = slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5);
     end
     cs(i).specfilename = filename;
-    noise = signal(.003*192000:round(.013*192000)); % First 3-13 ms of file collected as noise estimate
+    cs(i).noise = signal(.003*192000:round(.013*192000)); % First 3-13 ms of file collected as noise estimate
 end
 
 len = length(cs);
