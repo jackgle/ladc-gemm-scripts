@@ -10,7 +10,7 @@ feature_mat = feature_extract_4test(cs,noise,gamma,k_hfd);
 figure
 plot_space(feature_mat,idx);
 view(-45,45);
-xlabel('Pattern Duration (ms)');
+xlabel('Pattern Duration (\mus)');
 ylabel('Higuchi FD')
 zlabel('-20 dB Center Frequency (Hz)');
 xlim([0 800]);

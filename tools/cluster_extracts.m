@@ -1,4 +1,4 @@
-function [idx, k, other, other2] = cluster_extracts(fmat, method, outlier )
+function [idx, k, other, other2] = cluster_extracts(fmat, method, k, outlier )
 %% Normalization
 fmat_norm = normalizeData(fmat');
 fmat = fmat_norm';
@@ -8,9 +8,11 @@ fmat = fmat_norm';
 if nargin<4
     outlier=[];
 end
- 
-eva = evalclusters(fmat,'kmeans','DaviesBouldin','KList',1:10);
-k=eva.OptimalK;
+
+if nargin<3
+    eva = evalclusters(fmat,'kmeans','DaviesBouldin','KList',1:10);
+    k=eva.OptimalK;
+end
 
 %% Clustering
 switch method
