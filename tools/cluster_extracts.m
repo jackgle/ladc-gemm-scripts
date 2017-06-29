@@ -1,16 +1,13 @@
-function [idx, k, other, other2] = cluster_extracts(fmat, method, k, outlier )
+function [idx, k, other, other2] = cluster_extracts(fmat, method, k )
 %% Normalization
 fmat_norm = normalizeData(fmat');
 fmat = fmat_norm';
 
 % fmat_var = var(var(fmat,1),1);
 
-if nargin<4
-    outlier=[];
-end
-
 if nargin<3
-    eva = evalclusters(fmat,'kmeans','DaviesBouldin','KList',1:10);
+%     fmat_rdc = reduce_data(fmat);
+    eva = evalclusters(fmat,'kmeans','DaviesBouldin','KList',2:10);
     k=eva.OptimalK;
 end
 
@@ -18,43 +15,27 @@ end
 switch method
     
     case 'kmeans'
-%         if ~isempty(outlier)
-%             PVE = zeros(10,1);
-%             for i = 1:10
-%                 [~, C] = kmeans(fmat, i,'EmptyAction', 'Drop', 'Replicates', 1);
-%                 PVE(i) = var(var(C,1),1)/fmat_var;
-%             end
-% 
-%             plot(1:10, PVE);
-% 
-%             idx = kmeans(fmat, find(PVE==max(PVE)), 'EmptyAction', 'Drop', 'Replicates', 10);
-% 
-%             data_key = mode(idx);
-% 
-%             idx(idx~=data_key,:)=max(idx)+1;
-% 
-%             idx(idx==data_key) = kmeans(fmat(idx==data_key), k, 'EmptyAction', 'Drop', 'Replicates', 10);
-%         
-
         [idx,other] = kmeans(fmat, k,'Replicates', 5);
     case 'kmedoids'
         [idx] = kmedoids(fmat, k,'Replicates', 5);
     case 'SOM'
-        if ~isempty(outlier)
-            disp('Will not perform outlier detection with SOM method');
-        end
         fmat = fmat';
-        net = selforgmap([1 k]);
+        net = selforgmap([8 8],100,3,'gridtop','mandist');
         [net, ~] = train(net, fmat);
-        idx = net(fmat);
-        idx=idx';
-        idx_out = zeros(size(fmat,1),1);
-        for i = 1:size(idx,2)
-            idx_out(idx(:,i)==1)=i;
+        idx_net = net(fmat);
+        idx_net = vec2ind(idx_net);
+        inwghts = net.IW{1};
+        inwghts_flt=inwghts;
+        empt=setdiff(1:length(inwghts),idx_net);
+        inwghts_flt(empt,:)=NaN;
+        warning('off','all');
+        idx_km = kmeans(inwghts_flt, k,'Replicates', 5);
+        warning('on','all');
+        idx=zeros(length(idx_net),1);
+        unq=unique(idx_net);
+        for i=1:length(unq)
+            idx(idx_net==unq(i))=idx_km(unq(i));
         end
-        plotsompos(net,fmat);
-        idx = idx_out;
-        
     case 'spectral'
         W = SimGraph_NearestNeighbors(fmat',15,1,1);
         [idx, ~, other, other2] = SpectralClustering(W,k,2);

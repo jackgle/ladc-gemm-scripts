@@ -12,7 +12,7 @@ end
 
 % clf;
 % plot(kvect(2:end), v_hfdx);
-% axis([-50, inf, min(v_hfdx)-(0.5*std(v_hfdx)), max(v_hfdx)+(0.5*std(v_hfdx))]);
+% % axis([-50, inf, min(v_hfdx)-(0.5*std(v_hfdx)), max(v_hfdx)+(0.5*std(v_hfdx))]);
 % xlabel('Max k');
 % ylabel('Higuchi FD');
 

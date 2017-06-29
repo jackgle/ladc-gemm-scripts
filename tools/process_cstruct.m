@@ -41,7 +41,7 @@ for i = 1:length(struct_in)
 %     end
     
 %     struct_out(i).sig = wden(struct_out(i).sig,'modwtsqtwolog','h','mln',5,'fk8');
-    struct_out(i).sig = wden(struct_out(i).sig,'minimaxi','h','sln',6,'fk8');
+    struct_out(i).sig = wden(struct_out(i).sig,'minimaxi','h','sln',5,'fk8');
 
     if strcmp(plot_prcs,'plot')
         plot(struct_out(i).sig);

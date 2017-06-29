@@ -1,4 +1,4 @@
-function [ accuracy ] = class_accuracy(idx, idx_true, k)
+function [ accuracy ] = cpurity(idx, idx_true, k)
 
 errors = 0;
 
@@ -13,13 +13,14 @@ for i = 1:k
         errors = errors + length(find(idx(M)~=mode(idx(M))));
         modes(i) = mode(idx(M));
     else
+        sprintf('%s','Warning: Non-unique modal classes');
         num = setdiff(modes,mode(idx(M)));
         errors = errors + length(find(idx(M)~=num(1)));
         modes(i) = num(1);
     end
 end
 l = length(idx);
-accuracy = ((l-errors)/l)*100;
+accuracy = (l-errors)/l;
 
 
 end
