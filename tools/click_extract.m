@@ -33,9 +33,9 @@ function [cs] = click_extract(signal, time, method, dB_thresh, frame_size, filen
 %                       (3) .time_pk :      The time array value of the 
 %                                           frame's detected peak.
 %
-%                       (4) .time_win :     The time array of the frame.
+%                       (4) .time :     The time array of the frame.
 %
-%                       (5) .sample_win :   The sample number array of the
+%                       (5) .sample :   The sample number array of the
 %                                           frame
 %                       (6) .filename :     EARS file name
 %
@@ -203,22 +203,22 @@ for i = 1:size(slocs_out,2)
         cs(i).sig = signal(slocs_out(i)-((frame_size/2)-0.5):end);
         cs(i).sample_pk = slocs_out(i);
         cs(i).time_pk = time(slocs_out(i));
-        cs(i).time_win = time(slocs_out(i)-((frame_size/2)-0.5):end);
-        cs(i).sample_win = slocs_out(i)-((frame_size/2)-0.5):size(signal,2);
+        cs(i).time = time(slocs_out(i)-((frame_size/2)-0.5):end);
+        cs(i).sample = slocs_out(i)-((frame_size/2)-0.5):size(signal,2);
     elseif slocs_out(i)-((frame_size/2)-0.5) < 1
         cs(i).sig = signal(1:slocs_out(i)+((frame_size/2)-0.5));
         cs(i).sample_pk = slocs_out(i);
         cs(i).time_pk = time(slocs_out(i));
-        cs(i).time_win = time(1:slocs_out(i)+((frame_size/2)-0.5));
-        cs(i).sample_win = 1:slocs_out(i)+((frame_size/2)-0.5);
+        cs(i).time = time(1:slocs_out(i)+((frame_size/2)-0.5));
+        cs(i).sample = 1:slocs_out(i)+((frame_size/2)-0.5);
     else
         cs(i).sig = signal(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5));
         cs(i).sample_pk = slocs_out(i);
         cs(i).time_pk = time(slocs_out(i));
-        cs(i).time_win = time(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5))';
-        cs(i).sample_win = slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5);
+        cs(i).time = time(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5))';
+        cs(i).sample = slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5);
     end
-    cs(i).specfilename = filename;
+    cs(i).filename = filename;
     cs(i).noise = signal(.003*192000:round(.013*192000)); % First 3-13 ms of file collected as noise estimate
 end
 
@@ -240,7 +240,7 @@ while(1)
             end
 %             fields{(i-1)+j} = char(fields((i-1)+j));
             subplot(2,2,j);
-            plot(cs((i-1)+j).time_win,cs((i-1)+j).sig);
+            plot(cs((i-1)+j).time,cs((i-1)+j).sig);
             axis tight
             title((i-1)+j,'FontSize',14);
             xlabel('Time');
@@ -259,7 +259,7 @@ while(1)
                         i = i - 8;
                         for j = 1:4
                             subplot(2,2,j);
-                            plot(cs((i-1)+j).time_win,cs((i-1)+j).sig);
+                            plot(cs((i-1)+j).time,cs((i-1)+j).sig);
                             axis tight
                             title((i-1)+j,'FontSize',14);
                             xlabel('Time')
@@ -279,7 +279,7 @@ while(1)
                                 break;
                             end
                             subplot(2,2,j);
-                            plot(cs((i-1)+j).time_win,cs((i-1)+j).sig);
+                            plot(cs((i-1)+j).time,cs((i-1)+j).sig);
                             axis tight
                             title((i-1)+j,'FontSize',14);
                             xlabel('Time')

@@ -16,10 +16,10 @@ while(1)
             end
 %             fields{(i-1)+j} = char(fields((i-1)+j));
             subplot(2,2,j);
-            plot(cstruct((i-1)+j).time_win,cstruct((i-1)+j).sig);
+            plot(cstruct((i-1)+j).time,cstruct((i-1)+j).sig);
             axis tight
             title((i-1)+j,'FontSize',14);
-            xlabel(strcat('Time   filename:',cstruct((i-1)+j).specfilename))
+            xlabel(strcat('Time   filename:',cstruct((i-1)+j).filename))
         end
     else
         k = waitforbuttonpress;
@@ -35,10 +35,10 @@ while(1)
                         i = i - 8;
                         for j = 1:4
                             subplot(2,2,j);
-                            plot(cstruct((i-1)+j).time_win,cstruct((i-1)+j).sig);
+                            plot(cstruct((i-1)+j).time,cstruct((i-1)+j).sig);
                             axis tight
                             title((i-1)+j,'FontSize',14);
-                            xlabel(strcat('Time   filename:',cstruct((i-1)+j).specfilename))
+                            xlabel(strcat('Time   filename:',cstruct((i-1)+j).filename))
                         end
                     case 29
                         if ((i-1)+j) > len && mod(len,4)==0
@@ -55,10 +55,10 @@ while(1)
                                 break;
                             end
                             subplot(2,2,j);
-                            plot(cstruct((i-1)+j).time_win,cstruct((i-1)+j).sig);
+                            plot(cstruct((i-1)+j).time,cstruct((i-1)+j).sig);
                             axis tight
                             title((i-1)+j,'FontSize',14);
-                            xlabel(strcat('Time   filename:',cstruct((i-1)+j).specfilename))
+                            xlabel(strcat('Time   filename:',cstruct((i-1)+j).filename))
                         end
                     case 27
                         break;

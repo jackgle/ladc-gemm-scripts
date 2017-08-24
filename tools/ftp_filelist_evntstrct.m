@@ -1,6 +1,6 @@
 function [] = ftp_filelist( struct, buoy, remotepath, localpath, rows, quotes )
 
-% Here is a function to write a filelist file for the ftp retrieval script
+% This function writes a file list for the ftp retrieval script
 %
 %
 %   INPUTS: struct      - the filtered events structure array
