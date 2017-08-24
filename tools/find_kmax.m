@@ -10,10 +10,10 @@ for i = 2:length(kvect)
     
 end
 
-% clf;
-% plot(kvect(2:end), v_hfdx);
-% % axis([-50, inf, min(v_hfdx)-(0.5*std(v_hfdx)), max(v_hfdx)+(0.5*std(v_hfdx))]);
-% xlabel('Max k');
-% ylabel('Higuchi FD');
+clf;shg;
+plot(kvect(2:end), v_hfdx);
+% axis([-50, inf, min(v_hfdx)-(0.5*std(v_hfdx)), max(v_hfdx)+(0.5*std(v_hfdx))]);
+xlabel('Max k');
+ylabel('Higuchi FD');
 
 kmax = kvect(find(v_hfdx==min(v_hfdx))+1);

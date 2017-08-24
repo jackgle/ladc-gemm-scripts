@@ -19,7 +19,7 @@ while(1)
             plot(cstruct((i-1)+j).time_win,cstruct((i-1)+j).sig);
             axis tight
             title((i-1)+j,'FontSize',14);
-            xlabel('Time');
+            xlabel(strcat('Time   filename:',cstruct((i-1)+j).specfilename))
         end
     else
         k = waitforbuttonpress;
@@ -38,7 +38,7 @@ while(1)
                             plot(cstruct((i-1)+j).time_win,cstruct((i-1)+j).sig);
                             axis tight
                             title((i-1)+j,'FontSize',14);
-                            xlabel('Time')
+                            xlabel(strcat('Time   filename:',cstruct((i-1)+j).specfilename))
                         end
                     case 29
                         if ((i-1)+j) > len && mod(len,4)==0
@@ -58,7 +58,7 @@ while(1)
                             plot(cstruct((i-1)+j).time_win,cstruct((i-1)+j).sig);
                             axis tight
                             title((i-1)+j,'FontSize',14);
-                            xlabel('Time')
+                            xlabel(strcat('Time   filename:',cstruct((i-1)+j).specfilename))
                         end
                     case 27
                         break;
