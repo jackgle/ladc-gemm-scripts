@@ -6,11 +6,11 @@ function [cs] = click_extract(signal, time, method, thresh, frame_size, filename
 %
 %         (2) time : Time array of signal
 %
-%         (3) method : If == 'Amp', voltage amplitude threshold will be used, if == 'TK',
+%         (3) method : If == 'Amp', voltage amplitude threshold will be used, if == 'TKEO',
 %                      Teager-Kaiser amplitude threshold will be used, if an array is input,
 %                      matched filtering will be used
 %
-%         (4) dB_thresh : Decibel level of the detection threshold
+%         (4) thresh : Decibel level of the detection threshold
 %
 %         (5) frame_size : The frame size in number of samples to extract
 %                           for each click. If an even number is input, it
@@ -47,18 +47,21 @@ function [cs] = click_extract(signal, time, method, thresh, frame_size, filename
 %
 % MODIFICATIONS:
 %
-%       v2.0, 11/6/16, Jack LeBien - Framed clicks can now be extracted based on
-%       local maxima of the cross-correlation with a given framed
+%       v2.0, 11/6/16 - Clicks can now be extracted based on
+%       local maxima of the cross-correlation with a given template
 %       click.
-%       
-%       v2.1, 11/8/16, Jack LeBien - Fixed a minor user interface bug. Changed
+%   
+%       v2.1, 11/8/16 - Fixed a user interface bug. Changed
 %       frame plot navigation keys.
 %
-%       v2.2, 03/26/17, Jack LeBien - Now has option to detect by
-%       Teager-Kaiser energy
+%       v2.2, 03/26/17 - Now has option to detect by
+%       Teager-Kaiser energy operator (TKEO)
 %
-%       v2.3, 05/12/17, Jack LeBien - Updated notes, added noise estimate
+%       v2.3, 05/12/17 - Updated notes, added noise estimate
 %       output
+%   
+%       v2.4, 11/06/17 - Use findpeaks algorithm with MinPeakDistance and
+%       MinPeakHeight
 
 if iscolumn(signal)
     signal=signal';
@@ -85,7 +88,7 @@ signal = filtfilt(B,A,signal);
 
 %% Find the values and locations of all local maxima
 if ~isempty(method)
-    if strcmp(method,'TKE')
+    if strcmp(method,'TKEO')
         sig_p = teager(signal,2);
         ystring = 'Teager-Kaiser Energy (dB)';
     elseif isnumeric(method)
@@ -97,13 +100,13 @@ if ~isempty(method)
         sig_p = signal.^2;
         ystring = 'Squared-Amplitude';
     else
-        error('Incorrect method argument. Options: ''Amp'', ''Cross'', ''TKE''');
+        error('Incorrect method argument. Options: ''Amp'', ''Cross'', ''TKEO''');
     end
 else
     error('Empty methods input');
 end
 %% Get the locations of maxima with amplitudes above the given threshold
-[pks,locs] = findpeaks(sig_p,'MinPeakDistance',(frame_size-1)/2,'MinPeakHeight',thresh);    
+[~,locs] = findpeaks(sig_p,'MinPeakDistance',(frame_size-1)/2,'MinPeakHeight',thresh);    
 
 fprintf('\n\nNumber of significant peaks detected: %i\n',size(locs,2));
 
