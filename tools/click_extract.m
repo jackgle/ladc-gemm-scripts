@@ -1,4 +1,4 @@
-function [cs] = click_extract(signal, time, method, dB_thresh, frame_size, filename)
+function [cs] = click_extract(signal, time, method, thresh, frame_size, filename)
 
 % NAME: click_extract (v2.3)
 % 
@@ -43,25 +43,6 @@ function [cs] = click_extract(signal, time, method, dB_thresh, frame_size, filen
 %                                           first 3-13 ms of signal
 %
 %
-% NOTES: 
-%       
-%       If a short signal for matched filtering is provided, this program takes 
-%       the cross correlation of the given short
-%       signal and the given long signal, keeping the long signal stationary.
-%       Segments of the long signal are extracted in frames where there
-%       are local maxima in the cross-correlation. The cross-correlation
-%       oscillates as the given click passes in and out of phase with
-%       clicks in the signal. The algorithm extracts centered on the maximum of each
-%       of these peak clusters.
-%
-%       Here is an example of iterating through the structure fields created
-%       by this program:
-%
-%           for i = 1:len(cs)
-%               soundsc(cs(i).sig, Fs*0.01);
-%               pause(1);
-%           end
-%
 % AUTHOR: Jack LeBien, 08/2016
 %
 % MODIFICATIONS:
@@ -87,7 +68,7 @@ if nargin==4 || isempty(time)
     time = 1:size(signal,2);
 end
 
-version = 'v2.3';
+version = 'v2.4';
 fprintf('\n\n\t\tclick_extract %s', version);
 fprintf('\n\nWorking...');
 
@@ -96,27 +77,25 @@ if (mod(frame_size,2)==0)
     frame_size = frame_size+1;
 end
 
-%% Apply 10-pole Butterworth bandpass filter (15-95 kHz) before detection
-[B,A] = butter(5, [(15000*2)/192000 (95000*2)/192000]);
+%% Apply 10-pole Butterworth bandpass filter before detection
+LowFc = 15000;
+HiFc = 95000;
+[B,A] = butter(5, [(LowFc*2)/192000 (HiFc*2)/192000]);
 signal = filtfilt(B,A,signal);
 
 %% Find the values and locations of all local maxima
 if ~isempty(method)
     if strcmp(method,'TKE')
-        sig_T = teager(signal,2);
-        [pks, locs] = findpeaks(abs(sig_T));
+        sig_p = teager(signal,2);
         ystring = 'Teager-Kaiser Energy (dB)';
     elseif isnumeric(method)
-        sig_T = xcorr(signal, method);
-        sig_T = sig_T((size(signal,2)-round(frame_size/2)):(end-round(frame_size/2)));
-        [pks, locs] = findpeaks(real(20*log10(sig_T)));
+        sig_p = xcorr(signal, method);
+        sig_p = sig_p((size(signal,2)-round(frame_size/2)):(end-round(frame_size/2)));
+        sig_p=real(20*log10(sig_p));
         ystring = 'Cross Correlation Level (dB)';
-        sig_T=real(20*log10(sig_T));
     elseif strcmp(method,'Amp')
-        sig_T = signal;
-        [pks, locs] = findpeaks(real(20*log10(sig_T)));
-        ystring = 'Amplitude (dB)';
-        sig_T=real(20*log10(sig_T));
+        sig_p = signal.^2;
+        ystring = 'Squared-Amplitude';
     else
         error('Incorrect method argument. Options: ''Amp'', ''Cross'', ''TKE''');
     end
@@ -124,8 +103,9 @@ else
     error('Empty methods input');
 end
 %% Get the locations of maxima with amplitudes above the given threshold
-slocs = locs(pks>dB_thresh);
-fprintf('\n\nNumber of significant peaks detected: %i\n',size(slocs,2));
+[pks,locs] = findpeaks(sig_p,'MinPeakDistance',(frame_size-1)/2,'MinPeakHeight',thresh);    
+
+fprintf('\n\nNumber of significant peaks detected: %i\n',size(locs,2));
 
 %% Interface for checking click detection threshold
 fprintf('\n------------------------------------------\nEnter 1 if you wish to check the threshold.\nOtherwise, press RETURN.\n\n')
@@ -137,24 +117,24 @@ end
 
 if ~isempty(i)
     clf;
-    plot(sig_T,'Color',[0 0.4470 0.7410]);
+    plot(sig_p,'Color',[0 0.4470 0.7410]);
     axis tight
     hold on
     xlabel('Sample');
     ylabel(ystring);
     fig = gcf;
     figure(fig);
-    pkCIHi(1:size(sig_T,2)) = dB_thresh;
+    pkCIHi(1:size(sig_p,2)) = thresh;
     plot(pkCIHi,'--m');
     hold off
     fprintf('\n------------------------------------------------------------\nIf you wish to change the threshold, type a new value and press RETURN.\nOtherwise, press RETURN.\n\n');
     fprintf('\t');
-    dB_thresh = input('');
-    while(~isempty(dB_thresh))
-        slocs = locs(pks>dB_thresh);
-        fprintf('\nNumber of peaks detected: %i\n\n',size(slocs,2));
+    thresh = input('');
+    while(~isempty(thresh))
+        [~,locs] = findpeaks(sig_p,'MinPeakDistance',(frame_size-1)/2,'MinPeakHeight',thresh);   
+        fprintf('\nNumber of peaks detected: %i\n\n',size(locs,2));
         clf;
-        plot(sig_T,'Color',[0 0.4470 0.7410]);
+        plot(sig_p,'Color',[0 0.4470 0.7410]);
         axis tight
         hold on
         xlabel('Sample');
@@ -162,61 +142,38 @@ if ~isempty(i)
         fig = gcf;
         figure(fig);
         hold on
-        pkCIHi(1:size(sig_T,2)) = dB_thresh;
+        pkCIHi(1:size(sig_p,2)) = thresh;
         plot(pkCIHi,'--m');
         hold off
         fprintf('\t');
-        dB_thresh = input('');
+        thresh = input('');
     end
     close(fig);
 end
     
-%% Attempt to filter out all peak locations of given click but that of the max peak
+%% Create the new data structure
 
-i = 2;
-slocs_temp=slocs(1);
-slocs_out=[];
-while 1
-    if slocs(i)<(slocs(i-1)+(floor((frame_size/2))))
-        if i == size(slocs, 2)
-            slocs_out = [slocs_out,slocs_temp(sig_T(slocs_temp)==max(sig_T(slocs_temp)))];
-            slocs_temp=[];
-        end
-        slocs_temp=[slocs_temp,slocs(i)];
-    elseif size(slocs_temp,2)>0
-        slocs_out = [slocs_out,slocs_temp(sig_T(slocs_temp)==max(sig_T(slocs_temp)))];
-        slocs_temp=[];
-    end
-    i = i + 1;
-    if i > size(slocs,2)
-        break;
-    end
-end
-
-% s_len = size(slocs_out,2); % length of unfiltered structure
-% cstruct = zeros(s_len);
 cs = struct();
-%% Create the new data structure, and noise estimate
-for i = 1:size(slocs_out,2)
+for i = 1:size(locs,2)
     
-    if slocs_out(i)+((frame_size/2)-0.5) > size(signal,2)
-        cs(i).sig = signal(slocs_out(i)-((frame_size/2)-0.5):end);
-        cs(i).sample_pk = slocs_out(i);
-        cs(i).time_pk = time(slocs_out(i));
-        cs(i).time = time(slocs_out(i)-((frame_size/2)-0.5):end);
-        cs(i).sample = slocs_out(i)-((frame_size/2)-0.5):size(signal,2);
-    elseif slocs_out(i)-((frame_size/2)-0.5) < 1
-        cs(i).sig = signal(1:slocs_out(i)+((frame_size/2)-0.5));
-        cs(i).sample_pk = slocs_out(i);
-        cs(i).time_pk = time(slocs_out(i));
-        cs(i).time = time(1:slocs_out(i)+((frame_size/2)-0.5));
-        cs(i).sample = 1:slocs_out(i)+((frame_size/2)-0.5);
+    if locs(i)+((frame_size/2)-0.5) > size(signal,2)
+        cs(i).sig = signal(locs(i)-((frame_size/2)-0.5):end);
+        cs(i).sample_pk = locs(i);
+        cs(i).time_pk = time(locs(i));
+        cs(i).time = time(locs(i)-((frame_size/2)-0.5):end);
+        cs(i).sample = locs(i)-((frame_size/2)-0.5):size(signal,2);
+    elseif locs(i)-((frame_size/2)-0.5) < 1
+        cs(i).sig = signal(1:locs(i)+((frame_size/2)-0.5));
+        cs(i).sample_pk = locs(i);
+        cs(i).time_pk = time(locs(i));
+        cs(i).time = time(1:locs(i)+((frame_size/2)-0.5));
+        cs(i).sample = 1:locs(i)+((frame_size/2)-0.5);
     else
-        cs(i).sig = signal(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5));
-        cs(i).sample_pk = slocs_out(i);
-        cs(i).time_pk = time(slocs_out(i));
-        cs(i).time = time(slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5))';
-        cs(i).sample = slocs_out(i)-((frame_size/2)-0.5):slocs_out(i)+((frame_size/2)-0.5);
+        cs(i).sig = signal(locs(i)-((frame_size/2)-0.5):locs(i)+((frame_size/2)-0.5));
+        cs(i).sample_pk = locs(i);
+        cs(i).time_pk = time(locs(i));
+        cs(i).time = time(locs(i)-((frame_size/2)-0.5):locs(i)+((frame_size/2)-0.5))';
+        cs(i).sample = locs(i)-((frame_size/2)-0.5):locs(i)+((frame_size/2)-0.5);
     end
     cs(i).filename = filename;
     cs(i).noise = signal(.003*192000:round(.013*192000)); % First 3-13 ms of file collected as noise estimate

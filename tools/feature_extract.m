@@ -1,4 +1,4 @@
-function [ fmat, click_fft ] = feature_extract(struct_in)
+function [ fmat, click_fft, click_psd ] = feature_extract(struct_in)
 
 % Buffers and constants for spectral analysis
 % b =        6; % WPD levels
@@ -21,15 +21,15 @@ for i = 1:length(struct_in)
 %     click_norm = normalizeData(click_cur);
    
     click_fft(i,:) = fft(click_cur, N_FFT);
-%     L = length(click_cur);
-%     click_psd(i,:) = click_fft(i,1:N_FFT/2).*conj(click_fft(i,1:N_FFT/2))/(N_FFT*L);
-%     click_psd(i,2:end-1) = 2*click_psd(i,2:end-1);
-%     click_psd(i,:) = 10*log10(click_psd(i,:));
+    L = length(click_cur);
+    click_psd(i,:) = click_fft(i,1:N_FFT/2).*conj(click_fft(i,1:N_FFT/2))/(N_FFT*L);
+    click_psd(i,2:end-1) = 2*click_psd(i,2:end-1);
+    click_psd(i,:) = 10*log10(click_psd(i,:));
 
 %     click_psd(i,:) = pwelch(click_cur,hann(20),98*(1/5),1024);
 %     
 %     plot(fVals,click_psd);
-    
+    x
     %% Spectral;
     % Peak frequency
 %     fmat(i,1) = fVals(click_psd(i,:)==max(click_psd(i,:)))+fbinsz/2;

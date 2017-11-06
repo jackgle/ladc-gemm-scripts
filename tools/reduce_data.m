@@ -13,4 +13,4 @@ for i=1:size(fmat,1)
         ok(i)=0;
     end
 end
-fmat_clean=fmat(logical(ok));
+fmat_clean=fmat(logical(ok),:);

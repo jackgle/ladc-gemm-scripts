@@ -1,4 +1,4 @@
-function [] = ftp_filelist( struct, buoy, remotepath, localpath, rows, quotes )
+function [] = ftp_filelist_evntstrct( struct, buoy, remotepath, localpath, rows, quotes )
 
 % This function writes a file list for the ftp retrieval script
 %

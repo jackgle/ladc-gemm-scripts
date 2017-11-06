@@ -26,7 +26,7 @@ if nargin==4
         xlabel('Sample');
         hold on
         for i = 1:len
-            plot(cstruct(i).sample_win,cstruct(i).sig,'Color',colors(idx(i),:));
+            plot(cstruct(i).sample,cstruct(i).sig,'Color',colors(idx(i),:));
         end
     else
         if ~isempty(signal)
@@ -36,7 +36,7 @@ if nargin==4
         xlabel('Time (s)');
         hold on
         for i = 1:len
-            plot(cstruct(i).time_win,cstruct(i).sig,'Color',colors(idx(i),:));
+            plot(cstruct(i).time,cstruct(i).sig,'Color',colors(idx(i),:));
         end
     end
 else
@@ -49,7 +49,7 @@ else
         xlabel('Sample');
         hold on
         for i = 1:len
-            plot(cstruct(i).sample_win,cstruct(i).sig,'Color','r');
+            plot(cstruct(i).sample,cstruct(i).sig,'Color','r');
         end
     else
         if ~isempty(signal)
@@ -59,7 +59,7 @@ else
         xlabel('Time (s)');
         hold on
         for i = 1:len
-            plot(cstruct(i).time_win,cstruct(i).sig,'Color','r');
+            plot(cstruct(i).time,cstruct(i).sig,'Color','r');
         end
     end
 end
