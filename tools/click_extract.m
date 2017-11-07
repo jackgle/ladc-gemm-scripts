@@ -1,6 +1,6 @@
 function [cs] = click_extract(signal, time, method, thresh, frame_size, filename)
 
-% NAME: click_extract (v2.3)
+% NAME: click_extract (v2.4)
 % 
 % INPUTS: (1) signal : 1xn Input signal
 %
@@ -80,11 +80,15 @@ if (mod(frame_size,2)==0)
     frame_size = frame_size+1;
 end
 
-%% Apply 10-pole Butterworth bandpass filter before detection
+%% Pre-processing
+
+% 10-pole Butterworth bandpass filter before detection
 LowFc = 15000;
 HiFc = 95000;
 [B,A] = butter(5, [(LowFc*2)/192000 (HiFc*2)/192000]);
 signal = filtfilt(B,A,signal);
+% Wavelet denoising
+% signal = wden(signal,'minimaxi','s','sln',5,'sym8');
 
 %% Find the values and locations of all local maxima
 if ~isempty(method)
