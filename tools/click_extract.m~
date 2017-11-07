@@ -148,6 +148,7 @@ if ~isempty(i)
         clf;
         plot(sig_p,'Color',[0 0.4470 0.7410]);
         axis tight
+
         if isnumeric(method)
         else
             ylim([0 thresh*2])
