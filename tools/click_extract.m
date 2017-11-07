@@ -108,7 +108,7 @@ end
 %% Get the locations of maxima with amplitudes above the given threshold
 [~,locs] = findpeaks(sig_p,'MinPeakDistance',(frame_size-1)/2,'MinPeakHeight',thresh);    
 
-fprintf('\n\nNumber of significant peaks detected: %i\n',size(locs,2));
+fprintf('\n\nNumber of clicks detected: %i\n',size(locs,2));
 
 %% Interface for checking click detection threshold
 fprintf('\n------------------------------------------\nEnter 1 if you wish to check the threshold.\nOtherwise, press RETURN.\n\n')
@@ -184,9 +184,9 @@ end
 
 len = length(cs);
 
-fprintf('Number of frames extracted: %i\n\n',len);
+fprintf('Number of clicks extracted: %i\n\n',len);
 
-fprintf('------------------------------------------------\nPress the left and right arrow keys to navigate through\nplotted frames.\n\nTo discard signals, enter the plot numbers of\nthe undesired signals in the terminal, each followed by\nRETURN. Single quotes are not needed.\n\nPress ESC in the figure when finished.\n\n');
+fprintf('------------------------------------------------\nPress the left and right arrow keys to navigate through\nplotted clicks.\n\nTo discard clicks, enter the plot numbers of\nthe undesired signals in the terminal, each followed by\nRETURN. Single quotes are not needed.\n\nPress ESC in the figure when finished.\n\n');
 
 %% Interface for filtering unwanted signals from the structure
 i=1;
