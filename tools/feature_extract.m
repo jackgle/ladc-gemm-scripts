@@ -29,7 +29,6 @@ for i = 1:length(struct_in)
 %     click_psd(i,:) = pwelch(click_cur,hann(20),98*(1/5),1024);
 %     
 %     plot(fVals,click_psd);
-    x
     %% Spectral;
     % Peak frequency
 %     fmat(i,1) = fVals(click_psd(i,:)==max(click_psd(i,:)))+fbinsz/2;
