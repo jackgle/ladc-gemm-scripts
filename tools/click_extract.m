@@ -90,7 +90,7 @@ signal = filtfilt(B,A,signal);
 % Wavelet denoising
 % signal = wden(signal,'minimaxi','s','sln',5,'sym8');
 
-%% Find the values and locations of all local maxima
+%% Set the detection method
 if ~isempty(method)
     if strcmp(method,'TKEO')
         sig_p = teager(signal,2);

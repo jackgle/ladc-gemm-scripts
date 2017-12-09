@@ -6,7 +6,12 @@ function plot_extracts(cstruct,signal,shorttime,idx)
 % Filter signal as in click_extract, so that highlighted extracts align
 % with the signal they are overlayed upon
 
-[B,A] = butter(5, [(15000*2)/192000 (95000*2)/192000]);
+% [B,A] = butter(5, [(15000*2)/192000 (95000*2)/192000]);
+fc_lo = 15000;
+fc_hi = 95000;
+fs=192000;
+[B,A] = butter(5, [(fc_lo*2)/fs (fc_hi*2)/fs]);
+
 signal = filtfilt(B,A,signal);
 
 len =length(cstruct);
