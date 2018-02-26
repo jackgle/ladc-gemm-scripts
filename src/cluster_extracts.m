@@ -1,4 +1,4 @@
-function [idx, k, other, other2] = cluster_extracts(fmat, method, k )
+function [idx, k, other, other2] = cluster_extracts(fmat, method, k, eps, minPts)
 %% Normalization
 fmat_norm = normalizeData(fmat');
 fmat = fmat_norm';
@@ -41,9 +41,11 @@ switch method
         [idx, ~, other, other2] = SpectralClustering(W,k,2);
         
     case 'dbscan'
-%         for i = 0.05:0.02:0.3
-            [idx] = DBSCAN(fmat,.20,30);
-%         end
+        if nargin < 4
+            eps = .05;
+            minPts = 30;
+        end
+        [idx] = DBSCAN(fmat,eps,minPts);
         
     otherwise
         error('Invalid input')

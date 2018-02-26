@@ -25,6 +25,10 @@ for i = 1:length(struct_in)
         pause(2);
     end
     
+    if length(win) ~= length(struct_out(i).sig)
+        win = hann(length(struct_in(i).sig))';
+    end
+    
     struct_out(i).sig = struct_out(i).sig.*win;
     
     if strcmp(plot_prcs,'plot')

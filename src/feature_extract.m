@@ -1,4 +1,4 @@
-function [ fmat, fVals, pxx ] = feature_extract(struct_in)
+function [ fmat, fVals, click_fft ] = feature_extract(struct_in)
 
 
 % Buffers and constants for spectral analysis
@@ -57,8 +57,9 @@ for i = 1:length(struct_in)
 %     fmat(i,2) = mean(fVals((pxx(i,:) >= max(pxx(i,:))-20)))+fbinsz/2;
     
     % Spectral centroid
-%     cfft = abs(click_fft(i,1:N_FFT/2));
-    fmat(i,3) = (sum(fVals.*pxx)/sum(pxx))+fbinsz/2;
+    cfft = abs(click_fft(i,1:N_FFT/2));
+    fmat(i,3) = (sum(fVals.*cfft)/sum(cfft))+fbinsz/2;
+%     fmat(i,3) = (sum(fVals.*pxx(i,:))/sum(pxx(i,:)))+fbinsz/2;
     %% Duration                           
 %     fmat(i,1) = dur_95intsty(click_cur,'teag',Fs);
 %     fmat(i,1) = dur_95intsty(click_cur,'squared',Fs);
