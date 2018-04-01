@@ -2,7 +2,7 @@ function [ fmat, fVals, click_fft ] = feature_extract(struct_in)
 
 
 % Buffers and constants for spectral analysis
-N_FFT =     1024; % Length of FFT
+N_FFT =     512; % Length of FFT
 click_fft = zeros(length(struct_in), N_FFT);
 pxx = zeros(length(struct_in), N_FFT/2);
 Fs =        192000;
@@ -10,7 +10,8 @@ fVals =     Fs*(0:(N_FFT/2)-1)/N_FFT;
 fbinsz =    fVals(2)-fVals(1);
 % b =        7; % WPD levels
 
-nfeatures = 3;
+interpFactor=5;
+nfeatures = 1;
 
 fmat = zeros(length(struct_in),nfeatures);
 tic
@@ -26,7 +27,7 @@ for i = 1:length(struct_in)
 %     thresh = 10^((mx_dB-10)/20);
 %     click_cur = click_cur(find(env>=thresh, 1 ):find(env>=thresh, 1, 'last' ));
     
-    click_interp = interp(click_cur,5);
+    click_interp = interp(click_cur,interpFactor);
    
     click_fft(i,:) = fft(click_cur, N_FFT);
     L = length(click_cur);
@@ -53,30 +54,30 @@ for i = 1:length(struct_in)
     fmat(i,4) = mean(fVals((pxx(i,:) >= max(pxx(i,:))-20)))+fbinsz/2;
     
     % Spectral centroid
-    fmat(i,3) = (sum(fVals.*cfft)/sum(cfft))+fbinsz/2;
-%     fmat(i,3) = (sum(fVals.*pxx(i,:))/sum(pxx(i,:)))+fbinsz/2;
+    fmat(i,5) = (sum(fVals.*cfft)/sum(cfft))+fbinsz/2;
     %% Duration                           
-    fmat(i,4) = dur_95intsty(click_cur,'teag',Fs);
-    fmat(i,5) = dur_95intsty(click_cur,'squared',Fs);
-    fmat(i,6) = dur_10db(click_cur,Fs);
-%     fmat(i,4) = dur_3db(click_cur,Fs);
-    fmat(i,7) = dur_95e(click_interp,Fs*5);
+    fmat(i,6) = dur_95intsty(click_cur,'teag',Fs);
+    fmat(i,7) = dur_95intsty(click_cur,'squared',Fs);
+    fmat(i,8) = dur_db(click_cur,Fs,10);
+    fmat(i,9) = dur_db(click_cur,Fs,3);
+    fmat(i,10) = dur_95e(click_interp,Fs*interpFactor);
 %     fmat(i,1) = dur_95t(click_interp,Fs);
 %     fmat(i,8) = (length(click_cur)-40)/Fs*10^6; % For if the click has already been truncated to -10 dB endpoints
     %% Fractal Dimension
-    fmat(i,8) = hfd(click_interp,1:75);
+    fmat(i,11) = hfd(click_interp,1:75);
     % KFD
-    fmat(i,9) = kfd(click_interp);
+    fmat(i,12) = kfd(click_interp);
     % ABD
-    fmat(i,10) = abfd(click_interp);
+    fmat(i,13) = abfd(click_interp);
 %     MFD
-    fmat(i,11) = mfd(click_interp);
+    fmat(i,14) = mfd(click_interp);
     % Correlation Dimension
 %     fmat(i,12) = corr_dim(click_cur,3);
     %% Entropy
-    fmat(i,12) = shannon_entropy(click_cur);
-    fmat(i,13) = renyi_entropy(click_cur,3);
-%     fmat(i,1) = wentropy(click_cur,'shannon');
+    fmat(i,15) = shannon_entropy(click_cur);
+    fmat(i,16) = renyi_entropy(click_cur,3);
+    fmat(i,17) = wentropy(click_cur,'shannon');
+    fmat(i,18) = wentropy(click_cur,'log energy');
     %% Max Amplitude
 %     fmat(i,14) = max(click_cur);
     %% Wavelet Packet Decomposition

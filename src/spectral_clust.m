@@ -1,6 +1,6 @@
 function [idx,A] = spectral_clust(fmat,graphType,opt,k)
 
-fmat = normalize_fmat(fmat);
+% fmat = normalize_fmat(fmat);
 
 if nargin<4
 %     fmat_rdc = reduce_data(fmat);
